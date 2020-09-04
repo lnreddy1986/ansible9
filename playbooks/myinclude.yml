@@ -2,22 +2,21 @@
 - hosts: ubuntuos
   become: yes
   tasks:
-  - name: i want to install webserver on ubuntu
+  - include_tasks: myfile.yml
+  - name: i want to webserver on ubuntu
     apt:
       name: apache2
       state: present
-
-  - name: start the service
-    service:
-      name: apache2
-      state: started
-
+    notify: startwebserver
+ 
   - name: i want to copy index file into all nodes
     template:
       src: myindex.j2
       dest: /var/www/html/index.html
+    notify: startwebserver
 
-  - name: restart the service
+  handlers:
+  - name: startwebserver
     service:
       name: apache2
-      state: restarted
+      state:  started
